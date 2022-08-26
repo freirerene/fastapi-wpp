@@ -12,7 +12,7 @@ The bot have the following syntax:
 
 The database has the following structure:
 
-<img height="250" src="structure.jpg" width="250"/>
+<img height="350" src="structure.jpg" width="350"/>
 
 I chose to split the month in two for every expense or income -- the `first` or the `second` half.
 
