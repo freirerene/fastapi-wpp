@@ -1,0 +1,45 @@
+create function add_to_results() returns trigger
+    language plpgsql
+as
+$$
+DECLARE
+    val_month varchar;
+    last_val_month varchar;
+    val_day int;
+    val_first numeric;
+    val_second numeric;
+    fixed_val_first numeric;
+    fixed_val_second numeric;
+
+BEGIN
+    val_month = to_char(now(), 'YYYY-MM');
+
+    val_day = to_char(now(), 'DD')::int;
+
+    val_second = new.val;
+    val_first = 0;
+
+    IF val_day < 15 THEN
+        val_first = new.val;
+        val_second = 0;
+    END IF;
+
+    SELECT month::VARCHAR INTO last_val_month FROM results ORDER BY month DESC LIMIT 1;
+
+    IF last_val_month != val_month THEN
+
+        SELECT SUM(value_first) INTO fixed_val_first FROM fixed;
+        SELECT SUM(value_second) INTO fixed_val_second FROM fixed;
+
+        INSERT INTO results(owner, month, val_first, val_second, res_first, res_final)
+        VALUES(NEW.owner,val_month,fixed_val_first,fixed_val_second,NULL,NULL);
+
+    END IF;
+
+    INSERT INTO results(owner, month, val_first, val_second, res_first, res_final)
+    VALUES(NEW.owner,val_month,val_first,val_second,0,0);
+
+RETURN NEW;
+END;
+
+$$;
