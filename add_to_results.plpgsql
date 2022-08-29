@@ -24,12 +24,15 @@ BEGIN
         val_second = 0;
     END IF;
 
-    SELECT month::VARCHAR INTO last_val_month FROM results ORDER BY month DESC LIMIT 1;
+    SELECT month::VARCHAR INTO last_val_month FROM results WHERE owner = NEW.owner ORDER BY month DESC LIMIT 1;
+
+    RAISE NOTICE 'last_val_month = %', last_val_month;
+    RAISE NOTICE 'val_month = %', val_month;
 
     IF last_val_month != val_month THEN
 
-        SELECT SUM(value_first) INTO fixed_val_first FROM fixed;
-        SELECT SUM(value_second) INTO fixed_val_second FROM fixed;
+        SELECT SUM(value_first) INTO fixed_val_first FROM fixed WHERE owner = NEW.owner;
+        SELECT SUM(value_second) INTO fixed_val_second FROM fixed WHERE owner = NEW.owner;
 
         INSERT INTO results(owner, month, val_first, val_second, res_first, res_final)
         VALUES(NEW.owner,val_month,fixed_val_first,fixed_val_second,NULL,NULL);
